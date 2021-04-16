@@ -22,15 +22,15 @@ CREATE TABLE admins (
 CREATE TABLE products (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
-  price INTEGER CHECK (salary >= 0),
+  price INTEGER CHECK (price >= 0),
   description TEXT,
-  image_url TEXT,
+  image_url TEXT
 );
 
 CREATE TABLE subscriptions (
   username VARCHAR(25)
     REFERENCES users ON DELETE CASCADE,
-  job_id INTEGER
-    REFERENCES jobs ON DELETE CASCADE,
-  PRIMARY KEY (username, job_id)
+  product_id INTEGER
+    REFERENCES products ON DELETE CASCADE,
+  PRIMARY KEY (username, product_id)
 );
