@@ -96,7 +96,7 @@ class User {
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
-                  is_admin AS "isAdmin",
+                  has_paid AS "hasPaid",
                   image_url AS "imageUrl"
            FROM users
            ORDER BY username`
@@ -107,8 +107,8 @@ class User {
 
 	/** Given a username, return data about user.
    *
-   * Returns { username, first_name, last_name, has_paid, image_URL, products }
-   *   where products is { id, title, price, description, image_url} ** Check this.  It really should be subsriptions: [product_id,... ]
+   * Returns { username, first_name, last_name, has_paid, image_URL, subscriptions}
+   *   where subscriptions is [product_id,... ]
    * 
    *
    * Throws NotFoundError if user not found.
@@ -179,8 +179,8 @@ class User {
                                 first_name AS "firstName",
                                 last_name AS "lastName",
                                 email,
-                                is_admin AS "isAdmin",
-                                image_url AS imageUrl`;
+                                has_paid AS "hasPaid",
+                                image_url AS "imageUrl"`;
 		const result = await db.query(querySql, [ ...values, username ]);
 		const user = result.rows[0];
 
@@ -216,7 +216,7 @@ class User {
 			`SELECT id
            FROM products
            WHERE id = $1`,
-			[ productsId ]
+			[ productId ]
 		);
 		const product = preCheck.rows[0];
 

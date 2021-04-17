@@ -22,8 +22,8 @@ CREATE TABLE admins (
 CREATE TABLE products (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
-  price INTEGER CHECK (price >= 0),
-  description TEXT,
+  price INTEGER NOT NULL CHECK (price >= 0),
+  description TEXT NOT NULL,
   image_url TEXT
 );
 
