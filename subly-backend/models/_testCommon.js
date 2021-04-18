@@ -10,6 +10,8 @@ async function commonBeforeAll() {
 	await db.query('DELETE FROM users');
 	// noinspection SqlWithoutWhere
 	await db.query('DELETE FROM admins');
+	// noinspection SqlWithoutWhere
+	await db.query('DELETE FROM products');
 
 	const resultsProducts = await db.query(`
     INSERT INTO products (title, price, description, image_url)
