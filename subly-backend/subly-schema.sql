@@ -16,7 +16,8 @@ CREATE TABLE admins (
   last_name TEXT NOT NULL,
   email TEXT NOT NULL
     CHECK (position('@' IN email) > 1),
-  image_url TEXT
+  image_url TEXT,
+  is_approved BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE products (

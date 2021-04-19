@@ -16,11 +16,12 @@ describe('authenticate', function() {
 	test('works', async function() {
 		const admin = await Admin.authenticate('a1', 'password1');
 		expect(admin).toEqual({
-			username  : 'a1',
-			firstName : 'A1F',
-			lastName  : 'A1L',
-			email     : 'a1@email.com',
-			imageUrl  : 'http://a1.img'
+			username   : 'a1',
+			firstName  : 'A1F',
+			lastName   : 'A1L',
+			email      : 'a1@email.com',
+			imageUrl   : 'http://a1.img',
+			isApproved : false
 		});
 	});
 
@@ -47,10 +48,11 @@ describe('authenticate', function() {
 
 describe('register', function() {
 	const newAdmin = {
-		username  : 'new',
-		firstName : 'Test',
-		lastName  : 'Tester',
-		email     : 'test@test.com'
+		username   : 'new',
+		firstName  : 'Test',
+		lastName   : 'Tester',
+		email      : 'test@test.com',
+		isApproved : false
 	};
 
 	test('works', async function() {
@@ -61,6 +63,19 @@ describe('register', function() {
 		expect(admin).toEqual(newAdmin);
 		const found = await db.query("SELECT * FROM admins WHERE username = 'new'");
 		expect(found.rows.length).toEqual(1);
+		expect(found.rows[0].password.startsWith('$2b$')).toEqual(true);
+	});
+
+	test('works: adds approved', async function() {
+		let admin = await Admin.register({
+			...newAdmin,
+			password   : 'password',
+			isApproved : true
+		});
+		expect(admin).toEqual({ ...newAdmin, isApproved: true });
+		const found = await db.query("SELECT * FROM admins WHERE username = 'new'");
+		expect(found.rows.length).toEqual(1);
+		expect(found.rows[0].is_approved).toEqual(true);
 		expect(found.rows[0].password.startsWith('$2b$')).toEqual(true);
 	});
 
@@ -88,34 +103,37 @@ describe('findAll', function() {
 		const admins = await Admin.findAll();
 		expect(admins).toEqual([
 			{
-				username  : 'a1',
-				firstName : 'A1F',
-				lastName  : 'A1L',
-				email     : 'a1@email.com',
-				imageUrl  : 'http://a1.img'
+				username   : 'a1',
+				firstName  : 'A1F',
+				lastName   : 'A1L',
+				email      : 'a1@email.com',
+				imageUrl   : 'http://a1.img',
+				isApproved : false
 			},
 			{
-				username  : 'a2',
-				firstName : 'A2F',
-				lastName  : 'A2L',
-				email     : 'a2@email.com',
-				imageUrl  : null
+				username   : 'a2',
+				firstName  : 'A2F',
+				lastName   : 'A2L',
+				email      : 'a2@email.com',
+				imageUrl   : null,
+				isApproved : false
 			}
 		]);
 	});
 });
 
-/************************************** get */
+// /************************************** get */
 
 describe('get', function() {
 	test('works', async function() {
 		let admin = await Admin.get('a1');
 		expect(admin).toEqual({
-			username  : 'a1',
-			firstName : 'A1F',
-			lastName  : 'A1L',
-			email     : 'a1@email.com',
-			imageUrl  : 'http://a1.img'
+			username   : 'a1',
+			firstName  : 'A1F',
+			lastName   : 'A1L',
+			email      : 'a1@email.com',
+			imageUrl   : 'http://a1.img',
+			isApproved : false
 		});
 	});
 
@@ -129,7 +147,7 @@ describe('get', function() {
 	});
 });
 
-/************************************** update */
+// /************************************** update */
 
 describe('update', function() {
 	const updateData = {
@@ -142,8 +160,9 @@ describe('update', function() {
 	test('works', async function() {
 		let admin = await Admin.update('a1', updateData);
 		expect(admin).toEqual({
-			username : 'a1',
-			...updateData
+			username   : 'a1',
+			...updateData,
+			isApproved : false
 		});
 	});
 
@@ -152,15 +171,30 @@ describe('update', function() {
 			password : 'new'
 		});
 		expect(admin).toEqual({
-			username  : 'a1',
-			firstName : 'A1F',
-			lastName  : 'A1L',
-			email     : 'a1@email.com',
-			imageUrl  : 'http://a1.img'
+			username   : 'a1',
+			firstName  : 'A1F',
+			lastName   : 'A1L',
+			email      : 'a1@email.com',
+			imageUrl   : 'http://a1.img',
+			isApproved : false
 		});
 		const found = await db.query("SELECT * FROM admins WHERE username = 'a1'");
 		expect(found.rows.length).toEqual(1);
 		expect(found.rows[0].password.startsWith('$2b$')).toEqual(true);
+	});
+
+	test('works: set approved to true', async function() {
+		let admin = await Admin.update('a1', {
+			isApproved : true
+		});
+		expect(admin).toEqual({
+			username   : 'a1',
+			firstName  : 'A1F',
+			lastName   : 'A1L',
+			email      : 'a1@email.com',
+			imageUrl   : 'http://a1.img',
+			isApproved : true
+		});
 	});
 
 	test('not found if no such admin', async function() {
@@ -185,7 +219,7 @@ describe('update', function() {
 	});
 });
 
-/************************************** remove */
+// /************************************** remove */
 
 describe('remove', function() {
 	test('works', async function() {

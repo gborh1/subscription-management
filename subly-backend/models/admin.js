@@ -12,7 +12,7 @@ const { BCRYPT_WORK_FACTOR } = require('../config.js');
 class Admin {
 	/** authenticate admin with username, password.
    *
-   * Returns { username, first_name, last_name, email, has_paid, image_url }
+   * Returns { username, first_name, last_name, email, is_approved, image_url }
    *
    * Throws UnauthorizedError if admin not found or wrong password.
    **/
@@ -25,7 +25,8 @@ class Admin {
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
-                  image_url as "imageUrl"
+                  image_url as "imageUrl",
+                  is_approved as "isApproved"
            FROM admins
            WHERE username = $1`,
 			[ username ]
@@ -47,12 +48,12 @@ class Admin {
 
 	/** Register admin with data.
    *
-   * Returns { username, first_name, last_name, email}
+   * Returns { username, first_name, last_name, email, is_approved}
    *
    * Throws BadRequestError on duplicates.
    **/
 
-	static async register({ username, password, firstName, lastName, email }) {
+	static async register({ username, password, firstName, lastName, email, isApproved }) {
 		const duplicateCheck = await db.query(
 			`SELECT username
            FROM admins
@@ -72,10 +73,11 @@ class Admin {
             password,
             first_name,
             last_name,
-            email)
-           VALUES ($1, $2, $3, $4, $5)
-           RETURNING username, first_name AS "firstName", last_name AS "lastName", email`,
-			[ username, hashedPassword, firstName, lastName, email ]
+            email,
+            is_approved)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING username, first_name AS "firstName", last_name AS "lastName", email, is_approved AS "isApproved"`,
+			[ username, hashedPassword, firstName, lastName, email, isApproved ]
 		);
 
 		const admin = result.rows[0];
@@ -85,7 +87,7 @@ class Admin {
 
 	/** Find all admins.
    *
-   * Returns [{ username, first_name, last_name, email, image_url }, ...]
+   * Returns [{ username, first_name, last_name, email, image_url, isApproved }, ...]
    **/
 
 	static async findAll() {
@@ -94,7 +96,8 @@ class Admin {
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
-                  image_url AS "imageUrl"
+                  image_url AS "imageUrl", 
+                  is_approved AS "isApproved"
            FROM admins
            ORDER BY username`
 		);
@@ -104,7 +107,7 @@ class Admin {
 
 	/** Given a username, return data about admin.
    *
-   * Returns { username, first_name, last_name, image_URL}
+   * Returns { username, first_name, last_name, image_URL, is_approved}
    * 
    *
    * Throws NotFoundError if admin not found.
@@ -116,7 +119,8 @@ class Admin {
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
-                  image_url AS "imageUrl"
+                  image_url AS "imageUrl",
+                  is_approved AS "isApproved"
            FROM admins
            WHERE username = $1`,
 			[ username ]
@@ -129,15 +133,15 @@ class Admin {
 		return admin;
 	}
 
-	/** Updaadmin data with `data`.
+	/** Update admin data with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain
    * all the fields; this only changes provided ones.
    *
    * Data can include:
-   *   { firstName, lastName, password, email, image_url}
+   *   { firstName, lastName, password, email, image_url, is_approved}
    *
-   * Returns { username, firstName, lastName, email, image_url}
+   * Returns { username, firstName, lastName, email, image_url, is_approved}
    *
    * Throws NotFoundError if not found.
    *
@@ -152,9 +156,10 @@ class Admin {
 		}
 
 		const { setCols, values } = sqlForPartialUpdate(data, {
-			firstName : 'first_name',
-			lastName  : 'last_name',
-			imageUrl  : 'image_url'
+			firstName  : 'first_name',
+			lastName   : 'last_name',
+			imageUrl   : 'image_url',
+			isApproved : 'is_approved'
 		});
 		const usernameVarIdx = '$' + (values.length + 1);
 
@@ -165,7 +170,8 @@ class Admin {
                                 first_name AS "firstName",
                                 last_name AS "lastName",
                                 email,
-                                image_url AS "imageUrl"`;
+                                image_url AS "imageUrl",
+                                is_approved AS "isApproved"`;
 		const result = await db.query(querySql, [ ...values, username ]);
 		const admin = result.rows[0];
 
