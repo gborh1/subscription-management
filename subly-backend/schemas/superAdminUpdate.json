@@ -1,4 +1,5 @@
 {
+	"__comment__": "this file is not used. But could be used to add another level of approval for a super admin. Editing would be needed with an is_super to the db. erase this comment to use",
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"$id": "http://example.com/example.json",
 	"type": "object",
