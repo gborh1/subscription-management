@@ -13,6 +13,8 @@ async function commonBeforeAll() {
 	await db.query('DELETE FROM users');
 	// noinspection SqlWithoutWhere
 	await db.query('DELETE FROM admins');
+	// noinspection SqlWithoutWhere
+	await db.query('DELETE FROM products');
 
 	testProductIds[0] = (await Product.create({
 		title       : 'P1',
@@ -38,7 +40,7 @@ async function commonBeforeAll() {
 		lastName  : 'U1L',
 		email     : 'user1@user.com',
 		password  : 'password1',
-		hasPaid   : false
+		hasPaid   : true
 	});
 	await User.register({
 		username  : 'u2',
@@ -57,25 +59,28 @@ async function commonBeforeAll() {
 		hasPaid   : false
 	});
 	await Admin.register({
-		username  : 'a1',
-		firstName : 'A1F',
-		lastName  : 'A1L',
-		email     : 'admin1@admin.com',
-		password  : 'password1'
+		username   : 'a1',
+		firstName  : 'A1F',
+		lastName   : 'A1L',
+		email      : 'admin1@admin.com',
+		password   : 'password1',
+		isApproved : true
 	});
 	await Admin.register({
-		username  : 'a2',
-		firstName : 'U2F',
-		lastName  : 'U2L',
-		email     : 'admin2@admin.com',
-		password  : 'password2'
+		username   : 'a2',
+		firstName  : 'A2F',
+		lastName   : 'A2L',
+		email      : 'admin2@admin.com',
+		password   : 'password2',
+		isApproved : false
 	});
 	await Admin.register({
-		username  : 'a3',
-		firstName : 'A3F',
-		lastName  : 'A3L',
-		email     : 'admin3@admin.com',
-		password  : 'password3'
+		username   : 'a3',
+		firstName  : 'A3F',
+		lastName   : 'A3L',
+		email      : 'admin3@admin.com',
+		password   : 'password3',
+		isApproved : false
 	});
 
 	await User.subscribeToProduct('u1', testProductIds[0]);
@@ -93,10 +98,11 @@ async function commonAfterAll() {
 	await db.end();
 }
 
-const u1Token = createUserToken({ username: 'u1', hasPaid: false });
+const u1Token = createUserToken({ username: 'u1', hasPaid: true });
 const u2Token = createUserToken({ username: 'u2', hasPaid: false });
-const u3Token = createUserToken({ username: 'u3', hasPaid: true });
-const adminToken = createAdminToken({ username: 'admin' });
+const u3Token = createUserToken({ username: 'u3', hasPaid: false });
+const A1Token = createAdminToken({ admin: 'admin', isApproved: false });
+const A2Token = createAdminToken({ admin: 'admin', isApproved: true });
 
 module.exports = {
 	commonBeforeAll,
@@ -107,5 +113,6 @@ module.exports = {
 	u1Token,
 	u2Token,
 	u3Token,
-	adminToken
+	A1Token,
+	A2Token
 };

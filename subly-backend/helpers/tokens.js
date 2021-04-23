@@ -16,7 +16,8 @@ function createUserToken(user) {
 
 function createAdminToken(admin) {
 	let payload = {
-		admin : admin.username
+		admin      : admin.username,
+		isApproved : admin.isApproved || false
 	};
 
 	return jwt.sign(payload, SECRET_KEY);

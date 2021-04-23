@@ -156,13 +156,13 @@ describe('update', function() {
 	let updateData = {
 		title       : 'New',
 		price       : 500,
-		description : 'new description'
+		description : 'new description',
+		imageUrl    : 'newImage.img'
 	};
 	test('works', async function() {
 		let product = await Product.update(testProductIds[0], updateData);
 		expect(product).toEqual({
-			id       : testProductIds[0],
-			imageUrl : 'http://p1.img',
+			id : testProductIds[0],
 			...updateData
 		});
 	});

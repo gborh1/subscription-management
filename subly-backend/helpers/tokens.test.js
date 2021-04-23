@@ -41,11 +41,31 @@ describe('createUserToken', function() {
 
 describe('createAdminToken', function() {
 	test('works', function() {
+		const token = createAdminToken({ username: 'test', isApproved: false });
+		const payload = jwt.verify(token, SECRET_KEY);
+		expect(payload).toEqual({
+			iat        : expect.any(Number),
+			admin      : 'test',
+			isApproved : false
+		});
+	});
+
+	test('works: approved', function() {
+		const token = createAdminToken({ username: 'test', isApproved: true });
+		const payload = jwt.verify(token, SECRET_KEY);
+		expect(payload).toEqual({
+			iat        : expect.any(Number),
+			admin      : 'test',
+			isApproved : true
+		});
+	});
+	test('works: default not approved', function() {
 		const token = createAdminToken({ username: 'test' });
 		const payload = jwt.verify(token, SECRET_KEY);
 		expect(payload).toEqual({
-			iat   : expect.any(Number),
-			admin : 'test'
+			iat        : expect.any(Number),
+			admin      : 'test',
+			isApproved : false
 		});
 	});
 });

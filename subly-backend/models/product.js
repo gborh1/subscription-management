@@ -109,7 +109,7 @@ class Product {
    * This is a "partial update" --- it's fine if data doesn't contain
    * all the fields; this only changes provided ones.
    *
-   * Data can include: { title, price, description }
+   * Data can include: { title, price, description, imageUrl }
    *
    * Returns { id, title, price, description, imageUrl}
    *
@@ -117,7 +117,7 @@ class Product {
    */
 
 	static async update(id, data) {
-		const { setCols, values } = sqlForPartialUpdate(data, {});
+		const { setCols, values } = sqlForPartialUpdate(data, { imageUrl: 'image_url' });
 		const idVarIdx = '$' + (values.length + 1);
 
 		const querySql = `UPDATE products 

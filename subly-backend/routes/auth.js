@@ -108,7 +108,7 @@ router.post('/adminRegister', async function(req, res, next) {
 			throw new BadRequestError(errs);
 		}
 
-		const newAdmin = await Admin.register({ ...req.body });
+		const newAdmin = await Admin.register({ ...req.body, isApproved: false });
 		const token = createAdminToken(newAdmin);
 		return res.status(201).json({ token });
 	} catch (err) {

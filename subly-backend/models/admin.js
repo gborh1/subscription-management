@@ -107,7 +107,7 @@ class Admin {
 
 	/** Given a username, return data about admin.
    *
-   * Returns { username, first_name, last_name, image_URL, is_approved}
+   * Returns { username, first_name, email, last_name, image_URL, is_approved}
    * 
    *
    * Throws NotFoundError if admin not found.
