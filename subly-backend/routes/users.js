@@ -5,7 +5,12 @@
 const jsonschema = require('jsonschema');
 
 const express = require('express');
-const { ensureCorrectUserOrAdmin, ensureUserHasPaid, ensureAdminIsApproved } = require('../middleware/auth');
+const {
+	ensureCorrectUserOrAdmin,
+	ensureUserHasPaid,
+	ensureAdminIsApproved,
+	ensureCorrectPaidUserOrAdmin
+} = require('../middleware/auth');
 const { BadRequestError } = require('../expressError');
 const User = require('../models/user');
 const { createUserToken } = require('../helpers/tokens');
@@ -83,10 +88,10 @@ router.get('/:username', ensureCorrectUserOrAdmin, async function(req, res, next
  *
  * Returns { username, firstName, lastName, has_paid, image_url}
  *
- * Authorization required: Approved admin or same-user-as-:username
+ * Authorization required: Approved admin or PAID same-user-as-:username
  **/
 
-router.patch('/:username', ensureCorrectUserOrAdmin, async function(req, res, next) {
+router.patch('/:username', ensureCorrectPaidUserOrAdmin, async function(req, res, next) {
 	try {
 		const validator = jsonschema.validate(req.body, userUpdateSchema);
 		if (!validator.valid) {
@@ -130,10 +135,10 @@ router.patch('/:username/admin', ensureAdminIsApproved, async function(req, res,
 
 /** DELETE /[username]  =>  { deleted: username }
  *
- * Authorization required: Approved admin or same-user-as-:username
+ * Authorization required: Approved admin or PAID same-user-as-:username
  **/
 
-router.delete('/:username', ensureCorrectUserOrAdmin, async function(req, res, next) {
+router.delete('/:username', ensureCorrectPaidUserOrAdmin, async function(req, res, next) {
 	try {
 		await User.remove(req.params.username);
 		return res.json({ deleted: req.params.username });
@@ -146,10 +151,10 @@ router.delete('/:username', ensureCorrectUserOrAdmin, async function(req, res, n
  *
  * Returns {"subscribed": productId}
  *
- * Authorization required: Approved admin or same-user-as-:username
+ * Authorization required: Approved admin or PAID same-user-as-:username
  * */
 
-router.post('/:username/products/:id', ensureCorrectUserOrAdmin, async function(req, res, next) {
+router.post('/:username/products/:id', ensureCorrectPaidUserOrAdmin, async function(req, res, next) {
 	try {
 		const productId = +req.params.id;
 		await User.subscribeToProduct(req.params.username, productId);

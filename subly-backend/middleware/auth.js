@@ -95,6 +95,23 @@ function ensureAdminIsApproved(req, res, next) {
 function ensureCorrectUserOrAdmin(req, res, next) {
 	try {
 		const user = res.locals.user;
+		if (!(user && (user.isApproved || user.username === req.params.username))) {
+			throw new UnauthorizedError();
+		}
+		return next();
+	} catch (err) {
+		return next(err);
+	}
+}
+/** Middleware to use when they must provide a valid token & be a paid user matching
+ *  username provided as route param. Or user must be an Approved admin. 
+ *
+ *  If not, raises Unauthorized.
+ */
+
+function ensureCorrectPaidUserOrAdmin(req, res, next) {
+	try {
+		const user = res.locals.user;
 		if (!(user && (user.isApproved || (user.username === req.params.username && user.hasPaid)))) {
 			throw new UnauthorizedError();
 		}
@@ -127,5 +144,6 @@ module.exports = {
 	ensureUserHasPaid,
 	ensureAdminIsApproved,
 	ensureCorrectUserOrAdmin,
-	ensurePaidUserOrAdmin
+	ensurePaidUserOrAdmin,
+	ensureCorrectPaidUserOrAdmin
 };

@@ -197,17 +197,17 @@ describe('GET /users/:username', function() {
 		});
 	});
 
-	test('Works for same user who has paid', async function() {
-		const resp = await request(app).get(`/users/u1`).set('authorization', `Bearer ${u1Token}`);
+	test('Works for same user even if unpaid', async function() {
+		const resp = await request(app).get(`/users/u2`).set('authorization', `Bearer ${u2Token}`);
 		expect(resp.body).toEqual({
 			user : {
-				username      : 'u1',
-				firstName     : 'U1F',
-				lastName      : 'U1L',
-				email         : 'user1@user.com',
-				hasPaid       : true,
+				username      : 'u2',
+				firstName     : 'U2F',
+				lastName      : 'U2L',
+				email         : 'user2@user.com',
+				hasPaid       : false,
 				imageUrl      : null,
-				subscriptions : [ testProductIds[0] ]
+				subscriptions : []
 			}
 		});
 	});
@@ -215,10 +215,10 @@ describe('GET /users/:username', function() {
 		const resp = await request(app).get(`/users/u2`).set('authorization', `Bearer ${A1Token}`);
 		expect(resp.statusCode).toEqual(401);
 	});
-	test('Unauth for for same user if unpaid', async function() {
-		const resp = await request(app).get(`/users/u2`).set('authorization', `Bearer ${u2Token}`);
-		expect(resp.statusCode).toEqual(401);
-	});
+	// test('Unauth for for same user if unpaid', async function() {
+	// 	const resp = await request(app).get(`/users/u2`).set('authorization', `Bearer ${u2Token}`);
+	// 	expect(resp.statusCode).toEqual(401);
+	// });
 
 	test('unauth for other users', async function() {
 		const resp = await request(app).get(`/users/u1`).set('authorization', `Bearer ${u2Token}`);
