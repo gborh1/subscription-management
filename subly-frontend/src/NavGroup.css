@@ -1,0 +1,4 @@
+.NavGroup a.active {
+	font-weight: 700;
+	color: #000;
+}
