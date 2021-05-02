@@ -26,6 +26,9 @@
 		},
 		"imageUrl": {
 			"type": "string"
+		},
+		"hasPaid": {
+			"type": "boolean"
 		}
 	},
 	"additionalProperties": false,

@@ -64,7 +64,7 @@ router.get('/', ensureAdminIsApproved, async function(req, res, next) {
 	}
 });
 
-/** GET /[username] => { user }
+/** GET /[username] => { user, token }
  *
  * Returns  { username, first_name, last_name, has_paid, image_URL, subscriptions}
  *   where subscriptions is [product_id,... ]
@@ -75,7 +75,8 @@ router.get('/', ensureAdminIsApproved, async function(req, res, next) {
 router.get('/:username', ensureCorrectUserOrAdmin, async function(req, res, next) {
 	try {
 		const user = await User.get(req.params.username);
-		return res.json({ user });
+		const token = createUserToken(user);
+		return res.json({ user, token });
 	} catch (err) {
 		return next(err);
 	}
@@ -84,14 +85,14 @@ router.get('/:username', ensureCorrectUserOrAdmin, async function(req, res, next
 /** PATCH /[username] { user } => { user }
  *
  * Data can include:
- *   { firstName, lastName, password, email, imageUrl } 
+ *   { firstName, lastName, password, email, imageUrl, hasPaid } 
  *
- * Returns { username, firstName, lastName, has_paid, image_url}
+ * Returns { username, firstName, lastName, hasPaid, imageUrl}
  *
- * Authorization required: Approved admin or PAID same-user-as-:username
+ * Authorization required: Approved admin or same-user-as-:username
  **/
 
-router.patch('/:username', ensureCorrectPaidUserOrAdmin, async function(req, res, next) {
+router.patch('/:username', ensureCorrectUserOrAdmin, async function(req, res, next) {
 	try {
 		const validator = jsonschema.validate(req.body, userUpdateSchema);
 		if (!validator.valid) {
@@ -159,6 +160,23 @@ router.post('/:username/products/:id', ensureCorrectPaidUserOrAdmin, async funct
 		const productId = +req.params.id;
 		await User.subscribeToProduct(req.params.username, productId);
 		return res.json({ subscribed: productId });
+	} catch (err) {
+		return next(err);
+	}
+});
+
+/** DELETE /[username]/products/[id]  { state } => { unsubscribed }
+ *
+ * Returns {"unsubscribed": productId}
+ *
+ * Authorization required: Approved admin or PAID same-user-as-:username
+ * */
+
+router.delete('/:username/products/:id', ensureCorrectPaidUserOrAdmin, async function(req, res, next) {
+	try {
+		const productId = +req.params.id;
+		await User.unsubscribeFromProduct(req.params.username, productId);
+		return res.json({ unsubscribed: productId });
 	} catch (err) {
 		return next(err);
 	}

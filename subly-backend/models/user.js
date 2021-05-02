@@ -238,6 +238,36 @@ class User {
 			[ productId, username ]
 		);
 	}
+
+	/** Unsubscribe user from product: update db, returns undefined.
+   *
+   * - username: username subscribing to product
+   * - productId: product id
+   **/
+
+	static async unsubscribeFromProduct(username, productId) {
+		const preCheck = await db.query(
+			`SELECT id
+           FROM products
+           WHERE id = $1`,
+			[ productId ]
+		);
+		const product = preCheck.rows[0];
+
+		if (!product) throw new NotFoundError(`No product: ${productId}`);
+
+		const preCheck2 = await db.query(
+			`SELECT username
+           FROM users
+           WHERE username = $1`,
+			[ username ]
+		);
+		const user = preCheck2.rows[0];
+
+		if (!user) throw new NotFoundError(`No username: ${username}`);
+
+		await db.query(`DELETE FROM subscriptions WHERE username= $1 and product_id = $2`, [ username, productId ]);
+	}
 }
 
 module.exports = User;
