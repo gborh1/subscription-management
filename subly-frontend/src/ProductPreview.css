@@ -1,0 +1,10 @@
+.ProductPreview {
+	min-width: 100%;
+}
+
+.ProductPreview-Icon {
+	color: dodgerblue;
+}
+.ProductPreview-Button {
+	color: PaleVioletRed;
+}

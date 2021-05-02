@@ -3,8 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { userLogin } from './actions/currentUser';
 import { useHistory } from 'react-router-dom';
 import { clearErr } from './actions/errors';
+import { Paper, Typography } from '@material-ui/core';
 
-/** Form for adding new items to to the db.  For allow suser to pick the kind of item before inputting information */
+/** Form for logging user in */
 const LoginForm = () => {
 	// const { login, setLoginLoading, error, setError } = useContext(JoblyContext);
 	const dispatch = useDispatch();
@@ -16,7 +17,8 @@ const LoginForm = () => {
 
 	useEffect(
 		() => {
-			if (currentUser) history.push('/');
+			if (currentUser && currentUser.hasPaid) history.push('/profile');
+			if (currentUser && !currentUser.hasPaid) history.push('/pay');
 		},
 		[ currentUser ]
 	);
@@ -30,8 +32,8 @@ const LoginForm = () => {
 	}, []);
 
 	const INITIAL_STATE = {
-		username : '',
-		password : ''
+		username : 'testuser',
+		password : 'password'
 	};
 
 	// sets state for form data and the kind of menu, which can be toggled.
@@ -47,11 +49,17 @@ const LoginForm = () => {
 		e.preventDefault();
 		// setLoginLoading(true);
 		await dispatch(userLogin(formData));
-		console.log('we actually did it');
 	};
 
 	return (
 		<div className="pt-5">
+			<div className="col-4 mb-5 offset-4 ">
+				<Paper className="ps-4" style={{ backgroundColor: 'lightyellow' }}>
+					<Typography variant="body1">
+						<b>Note:</b> Use 'testuser' login to experience an existing profile
+					</Typography>
+				</Paper>
+			</div>
 			<div className="LoginForm">
 				<div className="container col-md-6 offset-md-3 col-lg-4 offset-lg-4 ">
 					<h2 className="mb-3">Log In</h2>
@@ -85,7 +93,7 @@ const LoginForm = () => {
 									/>
 								</div>
 								<div className="text-danger mb-3 ">
-									{error ? (
+									{Object.keys(error).length ? (
 										error.map((e, indx) => (
 											<div key={indx}>
 												<small>ERROR: {e}</small>

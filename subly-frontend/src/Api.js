@@ -64,7 +64,7 @@ class SublyApi {
 	}
 
 	/** Get a list of all products, accounting for filtering data  */
-	static async getProducts(data = {}, token) {
+	static async getProducts(token, data = {}) {
 		const header = { Authorization: `Bearer ${token}` };
 		let res = await this.request(`products`, data, undefined, header);
 		return res.products;
@@ -74,7 +74,7 @@ class SublyApi {
 	static async getUser(username, token) {
 		const header = { Authorization: `Bearer ${token}` };
 		let res = await this.request(`users/${username}`, undefined, undefined, header);
-		return res.user;
+		return { user: res.user, token: res.token };
 	}
 
 	/** updates user using username in the param. Account for token in the header*/
@@ -85,10 +85,19 @@ class SublyApi {
 	}
 
 	/** Applies to product given username and product id params */
-	static async subscribeToproduct(username, productId, token) {
+	static async subscribeToProduct(username, productId, token) {
+		console.log('we are attempting to subscribe');
 		const header = { Authorization: `Bearer ${token}` };
 		let res = await this.request(`users/${username}/products/${productId}`, undefined, 'post', header);
-		return res.suscribed;
+		return res.subcribed;
+	}
+
+	/** Applies to product given username and product id params */
+	static async unsubscribeFromProduct(username, productId, token) {
+		console.log('we are attempting to unsubscribe');
+		const header = { Authorization: `Bearer ${token}` };
+		let res = await this.request(`users/${username}/products/${productId}`, undefined, 'delete', header);
+		return res.unsubcribed;
 	}
 }
 

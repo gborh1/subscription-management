@@ -1,14 +1,11 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { userSignup } from './actions/currentUser';
 import { useHistory } from 'react-router-dom';
 import { clearErr } from './actions/errors';
 
-// import JoblyContext from './JoblyContext';
-
-/** Form for adding new items to to the db.  For allow suser to pick the kind of item before inputting information */
+/** Form for adding new users to to the db. */
 const SignupForm = () => {
-	// const { signup, setLoginLoading, error, token, setError } = useContext(JoblyContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const error = useSelector((st) => st.errors);
@@ -16,7 +13,8 @@ const SignupForm = () => {
 
 	useEffect(
 		() => {
-			if (currentUser) history.push('/');
+			if (currentUser && currentUser.hasPaid) history.push('/profile');
+			if (currentUser && !currentUser.hasPaid) history.push('/pay');
 		},
 		[ currentUser ]
 	);
@@ -131,7 +129,7 @@ const SignupForm = () => {
 									</div>
 								</div>
 								<div className="text-danger mb-3 ">
-									{error ? (
+									{Object.keys(error).length ? (
 										error.map((e, indx) => (
 											<div key={indx}>
 												<small>ERROR: {e}</small>
