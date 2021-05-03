@@ -20,7 +20,7 @@ This mimics a theoretical offering that has a series of microservices to which a
 * Node.js 
 * Ract.js
 
-##Libraries
+## Libraries
 * Reactstrap
 * Bootstrap
 * Styled Components
