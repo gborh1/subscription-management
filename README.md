@@ -6,7 +6,7 @@ This project is the skeleton of a subscrition system. The site can be found [her
 
 ## Core Usage
 
-This mimics a theoretical offering that has a series of microservices to which a user can subscribe. mimics core function for receiving payment. User receives authorization for profile only after submitting credit card (to hold).  User can subscribe and unsubscribe to services. 
+This mimics a theoretical offering that has a series of microservices to which a user can subscribe. Mimics core function for receiving pre-emptive payment. User receives authorization for profile only after submitting credit card (to hold).  User can subscribe and unsubscribe to services. 
 
 ## Features
 
