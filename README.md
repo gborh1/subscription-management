@@ -25,3 +25,7 @@ This mimics a theoretical offering that has a series of microservices to which a
 * Bootstrap
 * Styled Components
 * Material-Ui
+
+## Tests
+* Tests complete only for the API. 
+* Run with 'Jest file.test.js'
